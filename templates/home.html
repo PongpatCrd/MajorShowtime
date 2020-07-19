@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2><b>Home</b></h2>
+
+<div class="continer">
+  <!-- search -->
+  <div class="row">
+    <div class="col">
+      <div class="form-inline">
+        <div style="width: 100%;">
+          <hr>
+          <form id="search_get" method="GET" action=".">
+            <span>
+              <b>Region: </b><select id="select_region" name="select_region" class="form-control wrapper" required>
+                <option value="" label="select" disabled selected></option>
+                <option value="all" label="All"></option>
+                {% for detail in branch_regions %}
+                  <option value="{{detail}}" label="{{detail}}"></option>
+                {% endfor %}
+              </select>
+            </span>
+
+            <span>
+              <b>Number of back date: </b><select id="select_back_date" name="select_back_date" class="form-control wrapper" style="width: 70px;" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();' required>
+              </select>
+              <script>create_number_select_option("select_back_date", 14, 3, 1)</script>
+            </span>
+
+            <span>
+              <b>Number of screen: </b><select id="select_n_screen" name="select_n_screen" class="form-control wrapper" style="width: 70px;" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();' required>
+                <option value="all" label="All"></option>
+                {% for i in ''|center:max_n_screen %}
+                  <option value="{{ forloop.revcounter }}" label="{{ forloop.revcounter }}"></option>
+                {% endfor %}
+              </select>
+            </span>
+            <button class="btn btn-info"><b>GET</b></button>
+          </form>
+          <hr>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- main content -->
+  <div class="row">
+    <div class="col">
+      <h3><b>Dashboards</b></h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      
+      <div class="accordion" id="dashboard_charts">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="mb-0">
+              <button class="btn-dark btn-lg" type="button" data-toggle="collapse" data-target="#admis_each_movies_chart_collape">
+                Split by movies
+              </button>
+            </h2>
+          </div>
+      
+          <div id="admis_each_movies_chart_collape" class="collapse show">
+            <div class="card-body">
+              {% if admis_each_movie_dataset.datasets|length > 0 %}
+                <div class="chart-container">
+                  <button id="hide_show_lines" class="btn btn-info btn-sm">hide/show all</button>
+                  <canvas id="admis_each_movies_chart"></canvas>
+                  <script>
+                    var new_chart = create_line_chart("admis_each_movies_chart", {{admis_each_movie_dataset | safe}}, "Split by movies");
+                    set_hide_show_all_lines_button('hide_show_lines', new_chart);
+                  </script>
+                </div>
+              {% else %}
+                <p style="text-align: center;">Don't have any data to show.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" id="headingOne">
+            <h2 class="mb-0">
+              <button class="btn-dark btn-lg" type="button" data-toggle="collapse" data-target="#total_admis_each_day_chart_collape">
+                Overall
+              </button>
+            </h2>
+          </div>
+      
+          <div id="total_admis_each_day_chart_collape" class="collapse hide">
+            <div class="card-body">
+              {% if total_admis_each_day_dataset.datasets|length > 0 %}
+                <div class="chart-container">
+                  <canvas id="total_admis_each_day_chart"></canvas>
+                  <script>create_line_chart("total_admis_each_day_chart", {{total_admis_each_day_dataset | safe}}, "Overall");</script>
+                </div>
+              {% else %}
+                <p style="text-align: center;">Don't have any data to show.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<script>set_default_input_params_from_url()</script>
+{% endblock content %}

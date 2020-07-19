@@ -1,0 +1,89 @@
+{% load static %}
+
+{% block content %}
+<div class="modal fade" id="movie_status_selection_modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><b>Movie status configurations of page ({{tbl_mv_details.number}})</b></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <input class="form-control wrapper" type="test" placeholder="search keyword">
+        <div class="table-responsive">
+          <form action="." id="movie_status_selection_form" method="POST">
+            {% csrf_token %}
+            <table id="list_movie_status_selection" class="table table-hover table-sm" >
+              <thead class="thead-dark">
+                <tr>
+                  <th scope="col"><small>#</small></th>
+                  <th scope="col"><small>Movie name</small></th>
+                  <th scope="col"><small>Short name</small></th>
+                  <th scope="col"><small>Active</small></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for tbl_mv_detail in tbl_mv_details %}
+                <tr>
+                  <td style="text-align: center;"><small>{{ forloop.counter0|add:tbl_mv_details.start_index }}</small></td>
+                  <td><small>{{ tbl_mv_detail.mv_ename }}</small></td>
+                  <td style="text-align: center;"><small>{{ tbl_mv_detail.mv_sname }}</small></td>
+                  <td style="text-align: center;">
+                    <input type="text" name="mv_id_movie_status_selection" value="{{ tbl_mv_detail.mv_id }}" hidden/>
+                    {% if tbl_mv_detail.mv_status == 0 %}
+                    <input type="text" id="status_movie_status_selection_{{ forloop.counter0|add:tbl_mv_details.start_index }}" name="status_movie_status_selection" value="0" hidden/>
+                    <input type="text" id="default_status_movie_status_selection_{{ forloop.counter0|add:tbl_mv_details.start_index }}" value="0" disabled hidden/>
+                    <i id="icon_checkbox_movie_status_{{ forloop.counter0|add:tbl_mv_details.start_index }}" class="fas fa-square" onclick="change_checkbox_icon_and_input_value('status_movie_status_selection_{{ forloop.counter0|add:tbl_mv_details.start_index }}', 'icon_checkbox_movie_status_{{ forloop.counter0|add:tbl_mv_details.start_index }}');" style="cursor: pointer;"></i>
+                    {% elif tbl_mv_detail.mv_status == 1 %}
+                    <input type="text" id="status_movie_status_selection_{{ forloop.counter0|add:tbl_mv_details.start_index }}" name="status_movie_status_selection" value="1" hidden/>
+                    <input type="text" id="default_status_movie_status_selection_{{ forloop.counter0|add:tbl_mv_details.start_index }}" value="1" disabled hidden/>
+                    <i id="icon_checkbox_movie_status_{{ forloop.counter0|add:tbl_mv_details.start_index }}" class="fas fa-check-square" onclick="change_checkbox_icon_and_input_value('status_movie_status_selection_{{ forloop.counter0|add:tbl_mv_details.start_index }}', 'icon_checkbox_movie_status_{{ forloop.counter0|add:tbl_mv_details.start_index }}');" style="cursor: pointer;"></i>
+                    {% endif %}
+                    <script>
+                      $("#movie_status_selection_modal").on("hidden.bs.modal", function(){
+                        copy_value("default_status_movie_status_selection_{{ forloop.counter0|add:tbl_mv_details.start_index }}", "status_movie_status_selection_{{ forloop.counter0|add:tbl_mv_details.start_index }}", "disabled");
+                        change_checkbox_icon_base_on_element_value("status_movie_status_selection_{{ forloop.counter0|add:tbl_mv_details.start_index }}", "icon_checkbox_movie_status_{{ forloop.counter0|add:tbl_mv_details.start_index }}");
+                      });
+                    </script>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </form>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="submit_movie_status_selection_form" type="botton" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+        <script>
+          $("#submit_movie_status_selection_form").on("click", function(){
+            loading_screen(true);
+            $.ajax({
+              type: "POST",
+              url: "{% url 'movies_status_configs' %}",
+              dataType: "json",
+              data: $("#movie_status_selection_form").serialize() + "&" + $("#movie_to_show_get").serialize(),
+              success: function(response){
+                alert(response.status_msg);
+                $("#movies_table_html").html(response.movies_table_html);
+                $("#movies_multiple_status_selection_modal_html").html(response.movies_multiple_status_selection_modal_html);
+                loading_screen(false);
+              },
+              error: function(response){
+                alert("Oops! something went wrong, please try again later.");
+                location.reload();
+                loading_screen(false);
+              }
+            });
+          });
+        </script>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

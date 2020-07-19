@@ -1,0 +1,107 @@
+{% load custom_tags %}
+
+{% block content %}
+<div class="table-responsive table_display_center">
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr style="text-align: center;">
+        <th scope="col">#</th>
+        <th scope="col">Code</th>
+        <th scope="col">Name EN</th>
+        <th scope="col">Name TH</th>
+        <th scope="col">Screen</th>
+        <th scope="col">Region</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for paginator_branch_detail in paginator_branch_details %}
+      <tr>
+        <td style="text-align: center;">{{forloop.counter0|add:paginator_branch_details.start_index}}</td>
+        <td style="text-align: center;">{{paginator_branch_detail.branch_nickname}}</td>
+        <td>{{paginator_branch_detail.branch_fullname}}</td>
+        <td>{{paginator_branch_detail.branch_thainame}}</td>
+        <td style="text-align: center;">{{paginator_branch_detail.branch_notheatre}}</td>
+        <td>
+          <form id="{{paginator_branch_detail.branch_nickname}}_form">
+            {% csrf_token %}
+            <select id="{{paginator_branch_detail.branch_nickname}}_region_select" name="region" class="form-control">
+              <option value="None" disabled>Please Select</option>
+              <option value="Central">Central</option>
+              <option value="North">North</option>
+              <option value="North East">North East</option>
+              <option value="East">East</option>
+              <option value="South">South</option>
+            </select>
+          </form>
+        </td>
+        <td>
+          {% if not paginator_branch_detail.region %}
+          <i id="{{paginator_branch_detail.branch_nickname}}_alert" class="fas fa-exclamation-triangle" style="color: red;"></i>
+          {% endif %}
+        </td>
+        <script>
+          set_selected_to_option_in_select_element("{{paginator_branch_detail.branch_nickname}}_region_select", "{{paginator_branch_detail.region}}");
+          $("#{{paginator_branch_detail.branch_nickname}}_region_select").on('change', function(){
+            loading_screen(true);
+            $.ajax({
+              url: '{% url "create_or_update_region" %}',
+              type: 'POST',
+              dataType: 'json',
+              data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'branch_nickname'    : "{{paginator_branch_detail.branch_nickname}}",
+                'branch_codevista'   : "{{paginator_branch_detail.branchcodevista}}",
+                'region'             : $(this).val()
+              },
+              success: function(response){
+                loading_screen(false);
+
+                if(response.msg == "success"){
+                  $("#{{paginator_branch_detail.branch_nickname}}_alert").remove();
+                }
+                else{
+                  set_alert_error(response.msg);
+                }
+              },
+              error: function(){
+                alert('Oops! something went wrong, Please try again later.');
+                location.reload();
+              }
+            });
+          });
+        </script>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if paginator_branch_details.has_other_pages %}
+<div class="container" style="margin-top: 1em;">
+  <div class="row">
+    <div class="col">
+      <div class="pagination" style="width: fit-content; margin: 0 auto;">
+        {% if paginator_branch_details.has_previous %}
+        <a href="?{% update_url_params page=1 %}">&laquo;</a>
+        {% endif %}
+        {% for i in paginator_branch_details.paginator.page_range %}
+        {% if i >= paginator_branch_details.number|add:'-5' and i <= paginator_branch_details.number|add:'5' %}
+        {% if paginator_branch_details.number == i %}
+        <a class="active" href="?{% update_url_params page=i %}">{{ i }}</a>
+        {% else %}
+        <a href="?{% update_url_params page=i %}">{{ i }}</a>
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+        {% if paginator_branch_details.has_next %}
+        <a href="?{% update_url_params page=paginator_branch_details.paginator.num_pages %}">&raquo;</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<script>get_last_page_of_paginator("time_setting_branches_time_table_page", "{{paginator_branch_details|safe}}");</script>
+{% endblock %}

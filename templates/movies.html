@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2><b>Movies</b></h2>
+
+<div class="continer">
+  
+  <div class="row">
+    <div class="col">
+      <hr>
+        <div class="form-inline">
+          <form action="."  id="movie_to_show_get" method="GET" style="width: 100%;">
+            <span>
+              <b>Number of movie to shows: </b>
+              <select id="select_n_show_movies" name="select_n_show_movies" class="form-control wrapper" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
+              </select>
+              <script>
+              create_number_select_option("select_n_show_movies", 100, 1000, 100);
+              $("#select_n_show_movies").append('<option value="all">All</option>');
+              </script>
+            </span>
+            <button class="btn btn-info"><b>GET</b></button>
+
+            <button class="btn btn-info" style="float: right;"><i class="fas fa-search"></i></button>
+            <input id="search_movie" name="search_movie"  class="form-control wrapper" type="text" placeholder="search" style="float: right; margin-right: 5px; width: 9em;"/>
+          </form>
+          <script>set_default_input_params_from_url();</script>
+        </div>
+      <hr>
+    </div>
+  </div>
+
+  <!-- main content -->
+  <div class="row">
+    <div class="col" style="margin-top: 10px;">
+      <button class="btn btn-warning btn-sm" style="float: right; margin-right: 10px;" onclick="movie_detail_configs_make_step1(); clean_init_value_of_form('add_or_update_movie_detail_form'); allow_submit_button_if_form_complete('add_or_update_movie_detail_form', 'add_or_update_movie_detail_form_submit_btn'); set_value_to_element('mv_id', ''); set_value_to_element('format_details', '0000000004'); set_value_to_element('nation_id', 'TH'); set_value_to_element('mv_status', '0'); remove_all_class_and_add_new_class('icon_checkbox_movie_status', 'fas fa-square');" data-toggle="modal" data-target="#movie_detail_configs_modal"><i class="fas fa-plus"></i> <b>Add Movie</b></button>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:10px;">
+    <div class="col">
+      <div id="movies_table_html">
+        {% include 'movies_table.html' %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<datalist id="lang_options">
+  {% for lang_detail in lang_details %}
+    <option value="{{ lang_detail.mvlang_id }}">{{ lang_detail.mvlang_ename }}</option>
+  {% endfor %}
+</datalist>
+
+<datalist id="nation_options">
+  {% for nation_detail in nation_details %}
+    <option value="{{ nation_detail.mvnation_id }}">{{ nation_detail.mvnation_ename }}</option>
+  {% endfor %}
+</datalist>
+
+<datalist id="genre_options">
+  {% for genre_detail in genre_details %}
+    <option value="{{ genre_detail.mvgenre_id }}">{{ genre_detail.mvgenre_ename }}</option>
+  {% endfor %}
+</datalist>
+
+<datalist id="distributor_options">
+  {% for distributor_detail in distributor_details %}
+    <option value="{{ distributor_detail.distributor_id }}">{{ distributor_detail.distributor_name }}</option>
+  {% endfor %}
+</datalist>
+
+<datalist id="mvformat_options">
+  {% for mvformat_detail in mvformats %}
+    <option value="{{ mvformat_detail.format_strcode }}">{{ mvformat_detail.format_strname }}</option>
+  {% endfor %}
+</datalist>
+
+<div id="movies_multiple_status_selection_modal_html">
+  {% include 'movies_multiple_status_selection_modal.html' %}
+</div>
+<div id="movies_movie_detail_edit_modal">
+  {% include 'movies_movie_detail_edit_modal.html' %}
+</div>
+{% endblock content %}

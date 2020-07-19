@@ -1,0 +1,85 @@
+{% load static %}
+{% load custom_filters %}
+<!-- gijgo-combined-1.9.13 -->
+<script src="{% static 'gijgo-combined-1.9.13/js/gijgo.min.js' %}"></script>
+<link href="{% static 'gijgo-combined-1.9.13/css/gijgo.min.css' %}" rel="stylesheet"/>
+<!-- gijgo-combined-1.9.13 -->
+<script>
+  var uuid;
+</script>
+
+
+{% block content %} 
+<div id="screen_details">
+  
+  {% for _ in ''|center:showtime_dataset.branch_notheatre %}
+  {% with forloop.counter as i %}
+  <div class="card">
+    <div class="card-header" style="background-color: #1b262c;">
+      <h5 class="mb-0">
+        <div style="text-align: center;">
+          {% if showtime_dataset.branch_theatre_details|get_item:i %}
+          <b style="color: white; vertical-align: middle;">Screen {{ i }} ({{ showtime_dataset.branch_theatre_details|get_item:i }})</b>
+          {% else %}
+          <b style="color: white; vertical-align: middle;">Screen {{ i }} ()</b>
+          {% endif %}
+          <button id="{{ showtime_dataset.branch_nickname }}_screen_{{ i }}_add_slot_btn" class="btn btn-warning btn-sm" style="float: right;" onclick="show_element_by_class('{{ showtime_dataset.branch_nickname }}_screen_{{ i }}'); append_showtime_detail_row_to_table('{{ showtime_dataset.branch_nickname }}_screen_{{ i }}_table', '{{ i }}', createUUID());"><i class="fas fa-plus"></i> <b>Add Slot</b></button>
+
+          <button id="{{ showtime_dataset.branch_nickname }}_screen_{{ i }}copy_showtime" class="btn btn-success btn-sm btn_copy" style="float: left;" onclick="copy_showtime_by_screen_table_id('{{ showtime_dataset.branch_nickname }}_screen_{{ i }}_table');"><i class="fas fa-arrow-alt-circle-up"></i> <b>Copy</b></button>
+
+          <button hidden id="{{ showtime_dataset.branch_nickname }}_screen_{{ i }}paste_showtime" class="btn btn-danger btn-sm btn_paste" style="float: left; margin-left: .7em;" onclick="paste_showtime_to_screen_table_id('{{ showtime_dataset.branch_nickname }}_screen_{{ i }}_table', '{{ i }}');"><i class="fas fa-arrow-alt-circle-down"></i> <b>Paste</b></button>
+
+          <button id="{{ showtime_dataset.branch_nickname }}_screen_{{ i }}_view_btn" class="btn btn-light btn-sm" style="float: right; margin-right: .7em;"><i class="far fa-eye"></i> <b>View</b></button>
+        </div>
+      </h5>
+    </div>
+
+    <div id="{{ showtime_dataset.branch_nickname }}_screen_{{ i }}" class="collapse hide">
+      <form class="{{ showtime_dataset.branch_nickname }}_showtime_details_form" method="POST" action='.'>
+        <table id="{{ showtime_dataset.branch_nickname }}_screen_{{ i }}_table" class="make_space_between_column" style="width: 80%; margin: 0 auto;">
+          <thead style="text-align: center;">
+            <tr>
+              <th style="width: 20%;">Start Time</th>
+              <th style="width: 20%;">End Time</th>
+              <th style="width: 40%;">Movie Name</th>
+              <th style="width: 20%;">Format</th>
+              <th style="width: 20%;">Language</th>
+              <th style="width: 20%;"></th>
+            </tr>
+          </thead>
+          <tbody style="text-align: center;">
+            {% for details in showtime_dataset.showtime_details %}
+              {% if details.theatre == i %}
+              <script>
+                uuid = createUUID();
+                append_showtime_detail_row_to_table('{{ showtime_dataset.branch_nickname }}_screen_{{ i }}_table', '{{ i }}', uuid);
+                set_value_to_element('showtime_' + uuid, '{{ details.showtime }}');
+                set_value_to_element('mv_id_' + uuid, '{{ details.mv_id }}');
+                set_value_to_element('mv_format_' + uuid, '{{ details.format_strcode }}');
+                set_value_to_element('lang_' + uuid, '{{ details.mv_lang_id }}');
+              </script>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    $('#{{ showtime_dataset.branch_nickname }}_screen_{{ i }}_add_slot_btn').on('click', function(){
+      $('#{{ showtime_dataset.branch_nickname }}_screen_{{ i }}').collapse('show');
+    });
+
+    $('#{{ showtime_dataset.branch_nickname }}_screen_{{ i }}_view_btn').on('click', function(){
+      $('#{{ showtime_dataset.branch_nickname }}_screen_{{ i }}').collapse('toggle');
+    });
+  </script>
+  {% endwith %}
+  {% endfor %}
+
+  <hr>
+  <button class="btn btn-info" style="float: right; margin-left: 1em;" onclick="set_value_of_input_in_some_element_by_name('showtime_branch_selection_details', 'choose_status', '0'); uncheck_all_checkbox_icon('choose_status_icon'); change_checkbox_icon_and_input_value('choose_status_{{ showtime_dataset.branch_nickname }}', 'icon_checkbox_branch_choose_status_{{ showtime_dataset.branch_nickname }}'); submit_showtime_details_form('{{ showtime_dataset.branch_nickname }}_showtime_details_form');"><b>Save</b></button>
+  <button class="btn btn-info" style="float: right; margin-left: 1em;" data-toggle="modal" data-target="#showtime_branch_selection" onclick="set_value_of_input_in_some_element_by_name('showtime_branch_selection_details', 'choose_status', '0'); uncheck_all_checkbox_icon('choose_status_icon'); change_checkbox_icon_and_input_value('choose_status_{{ showtime_dataset.branch_nickname }}', 'icon_checkbox_branch_choose_status_{{ showtime_dataset.branch_nickname }}'); submit_from_showtime_branch_selection_form('{{ showtime_dataset.branch_nickname }}_showtime_details_form')"><b>Save and clone to</b></button>
+</div>
+{% endblock content %}

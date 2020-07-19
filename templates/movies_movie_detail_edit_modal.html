@@ -1,0 +1,269 @@
+{% load static %}
+
+{% block content %}
+<!-- Modal -->
+<form action="." id="add_or_update_movie_detail_form" method="POST" onkeydown="return event.key != 'Enter';">
+  {% csrf_token %}
+  <div class="modal fade" id="movie_detail_configs_modal" data-backdrop="static" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="movie_detail_configs_modal_title_step_1"><b>Detail configurations (1/3)</b></h5>
+          <h5 class="modal-title" id="movie_detail_configs_modal_title_step_2" style="display: none;"><b>Detail configurations (2/3)</b></h5>
+          <h5 class="modal-title" id="movie_detail_configs_modal_title_step_3" style="display: none;"><b>Detail configurations (3/3)</b></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {% if movie_detail.mv_id %}
+          <input id="mv_id" name="mv_id" type="text" value="{{ movie_detail.mv_id }}" hidden/>
+          {% else %}
+          <input id="mv_id" name="mv_id" type="text" value="" hidden/>
+          {% endif %}
+          <!-- step 1 -->
+          <div class="div_table_form" id="movie_detail_configs_modal_step_1" style="width: 100%;">
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Movie name (EN):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="mv_name_en" name="mv_name_en" type="text" class="form-control wrapper" placeholder="ex. Pirates 5(ทั่วไป)(3D)" value="{{ movie_detail.mv_name_en }}" oninput="set_value_to_element('pure_mv_name_en', create_pure_mv_name_en(this.value));" required/>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Pure movie name (EN):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="pure_mv_name_en" name="pure_mv_name_en" type="text" class="form-control wrapper" placeholder="ex. Pirates 5" value="{{ movie_detail.pure_mv_name_en }}" required/>
+              </div>
+            </div>
+          
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Movie short name:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="mv_short_name" name="mv_short_name" type="text" class="form-control wrapper" placeholder="ex. Pira5" style="width: 50%;" value="{{ movie_detail.mv_short_name }}" required/>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Movie name (TH):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="mv_name_th" name="mv_name_th" type="text" class="form-control wrapper" placeholder="ex. สงครามแค้นโจรสลัดไร้ชีพ" value="{{ movie_detail.mv_name_th }}" required/>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label><small><b>Actor name:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="actor_name" name="actor_name" type="text" class="form-control wrapper" placeholder="ex. Johnny Depp" value="{{ movie_detail.actor_name }}"/>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label><small><b>Actress name:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="actress_name" name="actress_name" type="text" class="form-control wrapper" placeholder="ex. Kaya Scodelario" value="{{ movie_detail.actress_name }}"/>
+              </div>
+            </div>
+
+          </div>
+          
+          <!-- step 2 -->
+          <div class="div_table_form" id="movie_detail_configs_modal_step_2" style="width: 100%;">
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Movie format:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <select id="format_details" name="format_details" class="form-control wrapper" style="width: 70%;" required>
+                  <script>copy_option_of_datalist_to_select_element("format_details", "mvformat_options");</script>
+                </select>
+                <script>make_select_searchable_multiple("format_details");</script>
+                {% if movie_detail.format_details %}
+                <script>set_value_to_element("format_details", {{ movie_detail.format_details|safe }});</script>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Nation:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <select id="nation_id" name="nation_id" class="form-control wrapper" style="width: 70%;" required>
+                  <script>copy_option_of_datalist_to_select_element("nation_id", "nation_options");</script>
+                </select>
+                <script>make_select_searchable("nation_id");</script>
+                {% if movie_detail.nation_id %}
+                  <script>set_value_to_element("nation_id", "{{ movie_detail.nation_id }}");</script>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Genre:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <select id="genre_id" name="genre_id" class="form-control wrapper" style="width: 70%;" required>
+                  <script>copy_option_of_datalist_to_select_element("genre_id", "genre_options");</script>
+                </select>
+                <script>make_select_searchable("genre_id");</script>
+                {% if movie_detail.genre_id %}
+                  <script>set_value_to_element("genre_id", "{{ movie_detail.genre_id }}");</script>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label><small><b>Desc (option):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="mv_desc" name="mv_desc" type="text" class="form-control wrapper" placeholder="ex. 2D" value="{{ movie_detail.mv_desc }}"/>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Estimate income (million):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="income_estimate" name="income_estimate" type="text" class="form-control wrapper" placeholder="20" value="{{ movie_detail.income_estimate }}" oninput="this.value=this.value.replace(/(?![0-9])./gmi,'')" required/>
+              </div>
+            </div>
+          </div>
+
+          <!-- step 3 -->
+          <div class="div_table_form" id="movie_detail_configs_modal_step_3" style="width: 100%;">
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Distributor name:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <select id="distributor_id" name="distributor_id" class="form-control wrapper" style="width: 70%;" required>
+                  <script>copy_option_of_datalist_to_select_element("distributor_id", "distributor_options");</script>
+                </select>
+                <script>make_select_searchable("distributor_id");</script>
+                {% if movie_detail.distributor_id %}
+                <script>set_value_to_element("distributor_id", "{{ movie_detail.distributor_id }}");</script>
+                {% endif %}
+              </div>
+            </div>
+            
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Duration (minutes):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="duration" name="duration" type="text" class="form-control wrapper" placeholder="ex. 112" oninput="this.value=this.value.replace(/(?![0-9])./gmi,'')" value="{{ movie_detail.duration }}" required/>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label><small><b>Advertisement time (minutes):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="advertisement_time" name="advertisement_time" type="text" class="form-control wrapper" placeholder="ex. 10" oninput="this.value=this.value.replace(/(?![0-9])./gmi,'')" value="{{ movie_detail.advertisement_time }}"/>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Release date:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="release_date" name="release_date" type="text" class="form-control wrapper cursor_hand" value="{{ movie_detail.release_date }}" required/>
+                <script>make_input_to_datepicker("release_date");</script>
+                <script>set_datepicker_value_dy_self_init("release_date");</script>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label><small><b>Expire date:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="expire_date" name="expire_date" type="text" class="form-control wrapper cursor_hand" value="{{ movie_detail.expire_date }}"/>
+                <script>make_input_to_datepicker("expire_date");</script>
+                <script>set_datepicker_value_dy_self_init("expire_date");</script>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Active:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                {% if movie_detail.mv_status or movie_detail.mv_status == 1 %}
+                <input id="mv_status" name="mv_status" type="text" value="1" hidden/>
+                <i id="icon_checkbox_movie_status" class="fas fa-check-square" onclick="change_checkbox_icon_and_input_value('mv_status', 'icon_checkbox_movie_status');" style="cursor: pointer;"></i>
+                {% else %}
+                <input id="mv_status" name="mv_status" type="text" value="0" hidden/>
+                <i id="icon_checkbox_movie_status" class="fas fa-square" onclick="change_checkbox_icon_and_input_value('mv_status', 'icon_checkbox_movie_status');" style="cursor: pointer;"></i>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          
+          <div id="button_control">
+            <hr style="width: 50%;">
+            <i id="movie_detail_configs_modal_next" class="fas fa-arrow-alt-circle-right fa-3x cursor_hand" style="float: right; margin-right: 10%; color: lightseagreen;"></i>
+            <i id="movie_detail_configs_modal_previous" class="fas fa-arrow-alt-circle-left fa-3x cursor_hand" style="float: left; margin-left: 10%; color: lightseagreen;"></i>
+          </div>
+        </div>
+
+        <div id="movie_detail_configs_modal_footer" class="modal-footer" style="display: none;">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        <div id="movie_detail_configs_modal_footer_step_final" class="modal-footer" style="display: none;">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="add_or_update_movie_detail_form_submit_btn" type="submit" class="btn btn-light cursor_default" disabled>Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  $('#add_or_update_movie_detail_form').on('submit', function(e){
+    e.preventDefault();
+    loading_screen(true);
+    
+    $.ajax({
+      type: "POST",
+      url: "{% url 'add_or_update_movie_detail' %}",
+      dataType: "json",
+      data: $("#add_or_update_movie_detail_form").serialize(),
+      success: function(response){
+        $('#movies_table_html').html(response.movies_table_html);
+        $('#movies_multiple_status_selection_modal_html').html(response.movies_multiple_status_selection_modal_html);
+        $('#movie_detail_configs_modal').modal('hide');
+        loading_screen(false);
+      },
+      error: function(response){
+        alert("Oops! something went wrong, please try again later.");
+        location.reload();
+        loading_screen(false);
+      }
+    });
+  });
+
+  $('#add_or_update_movie_detail_form').on('change', function(){
+    allow_submit_button_if_form_complete('add_or_update_movie_detail_form', 'add_or_update_movie_detail_form_submit_btn');
+  });
+</script>
+
+{% endblock content %}

@@ -1,0 +1,30 @@
+{% extends 'base.html ' %}
+{% block content %}
+<h2><b>Branch Region Setting</b></h2>
+
+<div class="continer">
+
+  <div class="row">
+    <div class="col"> 
+      <hr>
+        <div class="form-inline">
+          <form action="."  id="region_to_show_get" method="GET" style="width: 100%;">
+            <button class="btn btn-info" style="float: right;"><i class="fas fa-search"></i></button>
+            <input id="search_region_setting" name="search_region_setting"  class="form-control wrapper" type="text" placeholder="search" style="float: right; margin-right: 5px; width: 9em;"/>
+          </form>
+        <script>set_default_input_params_from_url();</script>
+      </div>
+    <hr>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <div id="branch_region_setting_table_html">
+        {% include 'branch_region_setting_table.html' %}
+      </div>
+    </div>
+  </div>
+  
+</div>
+{% endblock content %}

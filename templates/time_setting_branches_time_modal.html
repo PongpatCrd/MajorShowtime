@@ -1,0 +1,151 @@
+{% load static %}
+<!-- gijgo-combined-1.9.13 -->
+<script src="{% static 'gijgo-combined-1.9.13/js/gijgo.min.js' %}"></script>
+<link href="{% static 'gijgo-combined-1.9.13/css/gijgo.min.css' %}" rel="stylesheet"/>
+<!-- gijgo-combined-1.9.13 -->
+
+{% block content %}
+<form id="time_setting_form" action="." method="POST">
+  {% csrf_token %}
+  <div class="modal fade" id="time_setting_configs_modal" data-backdrop="static" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="time_setting_configs_modal_title_step_1"><b>Time configurations (1/2)</b></h5>
+          <h5 class="modal-title" id="time_setting_configs_modal_title_step_2" style="display: none;"><b>Time configurations (2/2)</b></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- step 1 -->
+          <div class="div_table_form" id="time_setting_configs_modal_step_1" style="width: 100%;">
+            <input id="branch_nickname" name="branch_nickname" type="text" value="" hidden/>
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>First showtime:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="first_showtime" name="first_showtime" type="text" class="form-control wrapper" width="70%" required/>
+              </div>
+              <script>create_time_picker('first_showtime');</script>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Last showtime:</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <input id="last_showtime" name="last_showtime" type="text" class="form-control wrapper" width="70%" required/>
+              </div>
+              <script>create_time_picker('last_showtime');</script>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Adviertisment time (Minutes):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <select id="advertisement_time" name="advertisement_time" class="form-control wrapper" style="width: 70%;" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();' required></select>
+                <script>create_number_select_option('advertisement_time', 0, 60, 5);</script>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Clean-up time (Minutes):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <select id="clean_up_time" name="clean_up_time" class="form-control wrapper" style="width: 70%;" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();' required>
+                </select>
+                <script>create_number_select_option('clean_up_time', 0, 60, 5);</script>
+              </div>
+            </div>
+
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label class="required"><small><b>Break time (Minutes):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <select id="break_time" name="break_time" class="form-control wrapper" style="width: 70%;" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();' required></select>
+                <script>create_number_select_option('break_time', 0, 60, 5);</script>
+              </div>
+            </div>
+          </div>
+          
+          <!-- step 2 -->
+          <div class="div_table_form" id="time_setting_configs_modal_step_2" style="width: 100%;">
+            <div class="div_row_form">
+              <div class="div_cell_form" style="width: 30%; text-align: right;">
+                <label><small><b>Best time (optional):</b></small>&nbsp;</label>
+              </div>
+              <div class="div_cell_form">
+                <div id="best_time_details"></div>
+
+                <div hidden>
+                  <input id="timepiker" type="text" onchange="add_div_of_hidden_input_tag_to_element('best_time_details', 'best_time_details', this.value);"/>
+                </div>
+              </div>
+              <button class="btn btn-info btn-sm" type="button" id="add_best_time_detail">Add</button>
+              <script>
+                let time_picker = create_time_picker('timepiker');
+                $('#add_best_time_detail').on('click', function(){
+                  time_picker.open();
+                });
+              </script>
+            </div>
+          </div>
+          
+          <div id="button_control">
+            <hr style="width: 50%;">
+            <i id="time_setting_configs_modal_next" class="fas fa-arrow-alt-circle-right fa-3x cursor_hand" style="float: right; margin-right: 10%; color: lightseagreen;"></i>
+            <i id="time_setting_configs_modal_previous" class="fas fa-arrow-alt-circle-left fa-3x cursor_hand" style="float: left; margin-left: 10%; color: lightseagreen;"></i>
+          </div>
+        </div>
+
+        <div id="time_setting_configs_modal_footer" class="modal-footer" style="display: none;">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+        <div id="time_setting_configs_modal_footer_step_final" class="modal-footer" style="display: none;">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="time_setting_form_submit_btn" type="submit" class="btn btn-light cursor_default" disabled>Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+<script>
+  $('#time_setting_form').on('submit', function(e){
+    e.preventDefault();
+    loading_screen(true);
+    var datas = $("#time_setting_form").serializeArray();
+    datas.push({name: 'select_region', value: $('#select_region').val()});
+    datas.push({name: 'search_time_setting', value: $('#search_time_setting').val()});
+    datas.push({name: 'page', value: $('#page').val()});
+
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'update_branch_time' %}",
+      dataType: 'json',
+      data: datas,
+      success: function(response){
+        loading_screen(false);
+        $('#time_setting_branches_time_table_html').html(response.time_setting_branches_time_table_html);
+        $('#time_setting_configs_modal').modal('hide')
+      },
+      error: function(response){
+        alert('Opps! Something went wrong, please try again later');
+        location.reload();
+      }
+    });
+  });
+
+  $('#time_setting_form').on('change', function(){
+    allow_submit_button_if_form_complete('time_setting_form', 'time_setting_form_submit_btn');
+  });
+
+  $('#time_setting_configs_modal_next').on('click', function(){
+    allow_submit_button_if_form_complete('time_setting_form', 'time_setting_form_submit_btn');
+  });
+</script>
+{% endblock %}

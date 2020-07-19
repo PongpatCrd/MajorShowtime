@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2><b>Time Setting</b></h2>
+
+<div class="continer">
+
+  <div class="row">
+    <div class="col"> 
+      <hr>
+        <div class="form-inline">
+          <form action="."  id="time_to_show_get" method="GET" style="width: 100%;">
+            <span>
+              <b>Region: </b><select id="select_region" name="select_region" class="form-control wrapper" required>
+                <option value="all" label="All"></option>
+                {% for detail in branch_regions %}
+                  <option value="{{detail}}" label="{{detail}}"></option>
+                {% endfor %}
+              </select>
+            </span>
+            <button class="btn btn-info"><b>GET</b></button>
+
+            <button class="btn btn-info" style="float: right;"><i class="fas fa-search"></i></button>
+            <input id="search_time_setting" name="search_time_setting"  class="form-control wrapper" type="text" placeholder="search" style="float: right; margin-right: 5px; width: 9em;"/>
+          </form>
+        <script>set_default_input_params_from_url();</script>
+      </div>
+    <hr>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <div id="time_setting_branches_time_table_html">
+        {% include 'time_setting_branches_time_table.html' %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="time_setting_branches_time_modal_html">
+  {% include 'time_setting_branches_time_modal.html' %}
+</div>
+{% endblock %}

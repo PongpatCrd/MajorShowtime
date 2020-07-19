@@ -1,0 +1,28 @@
+{% block content %}
+{% for showtime_dataset in showtime_datasets %}
+<div class="branch_box_card form-inline cursor_hand" onclick="hide_element_by_class('showtime_branch_box_card'); hide_element_by_class('pagination'); show_element_by_class('{{ showtime_dataset.branch_nickname }}_showtime_detail');">
+  <table class="table_display_center" style="color: white; width: 95%;">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Branch code</th>
+        <th style="width: 25%;">Branch name</th>
+        <th style="width: 25%;">Region</th>
+        <th style="width: auto;">Screen in use</th>
+      </tr>
+    </thead>
+    <tbody style="text-align: center;">
+      <tr>
+        <td>{{ showtime_dataset.branch_nickname }}</td>
+        <td>{{ showtime_dataset.branch_fullname }}</td>
+        <td>{{ showtime_dataset.branch_region }}</td>
+        {% if showtime_dataset.n_theatre_use == showtime_dataset.branch_notheatre %}
+        <td style="color: greenyellow;">{{ showtime_dataset.n_theatre_use }}/{{ showtime_dataset.branch_notheatre }}</td>
+        {% else %}
+        <td style="color: red;">{{ showtime_dataset.n_theatre_use }}/{{ showtime_dataset.branch_notheatre }}</td>
+        {% endif %}
+      </tr>
+    </tbody>
+  </table>   
+</div>
+{% endfor %}
+{% endblock content %}

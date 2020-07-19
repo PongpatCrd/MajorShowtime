@@ -1,0 +1,8 @@
+{% block content %}
+<div id="error_alert" class="alert alert-danger alert-dismissible fade show" role="alert" hidden>
+  <button type="button" class="close" onclick="set_alert_error('');" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  <strong>Error!</strong><p id="error_msg" style="margin-left: 2%;"></p>
+</div>
+{% endblock content %}

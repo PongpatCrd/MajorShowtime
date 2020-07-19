@@ -1,0 +1,220 @@
+{% extends 'base.html ' %}
+{% load custom_filters %}
+{% load custom_tags %}
+{% block content %}
+<h2><b>Showtimes</b></h2>
+<datalist id="mv_list_options">
+  {% for mv_detail in mv_details %}
+  <option value="{{ mv_detail.mv_id }}">{{ mv_detail.mv_ename }} ({{ mv_detail.mv_time }} MIN)</option>
+  {% endfor %}
+</datalist>
+
+<datalist id="lang_options">
+  {% for lang_detail in lang_details %}
+    <option value="{{ lang_detail.mvlang_id }}">{{ lang_detail.mvlang_ename }}</option>
+  {% endfor %}
+</datalist>
+
+<script>var movie_format_map={{ movie_format_map|safe }};</script>
+
+<div id="showtime_branch_selection_modal_html">
+  {% include 'showtime_branch_selection_modal.html' with all_showtime_datasets=all_showtime_datasets%}
+</div>
+
+<div class="continer">
+
+  <div class="row">
+    <div class="col"> 
+      <hr>
+        <div class="form-inline">
+          <form action="."  id="showtime_to_show_get" method="GET" style="width: 100%;">
+            <div class="row">
+              <div class="col">
+                <b>Region: </b><select id="select_region" name="select_region" class="form-control wrapper" required>
+                  <option value="" label="select" disabled selected></option>
+                  <option value="all" label="All"></option>
+                  {% for detail in branch_regions %}
+                    <option value="{{ detail }}" label="{{ detail }}"></option>
+                  {% endfor %}
+                </select>
+                
+                <b>Number of screen: </b><select id="select_n_screen" name="select_n_screen" class="form-control wrapper" style="width: 70px;" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();' required>
+                  {% for i in ''|center:max_n_screen %}
+                    <option value="{{ forloop.revcounter }}" label="{{ forloop.revcounter }}" selected></option>
+                  {% endfor %}
+                </select>
+
+                <b>Movie list size: </b>
+                <select id="select_n_show_movies" name="select_n_show_movies" class="form-control wrapper" onfocus='this.size=5;' onblur='this.size=1;' onchange='this.size=1; this.blur();'>
+                </select>
+                <script>
+                create_number_select_option("select_n_show_movies", 500, 3000, 500);
+                $("#select_n_show_movies").append('<option value="all">All</option>');
+                </script>
+
+                <b>Showtime date: </b><input id="showtime_date" name="showtime_date" type="text" class="form-control wrapper cursor_hand" value="" style="width: 8em;" required/>
+                <script>make_input_to_datepicker("showtime_date");</script>
+                <script>set_datepicker_value_dy_self_init("showtime_date");</script>
+                <button class="btn btn-info"><b>GET</b></button>
+
+                <button class="btn btn-info" style="float: right;"><i class="fas fa-search"></i></button>
+                <input id="search_showtime" name="search_showtime"  class="form-control wrapper" type="text" placeholder="search" style="float: right; margin-right: 5px; width: 9em;"/>
+              </div>
+
+            </div>
+
+          </form>
+        <script>set_default_input_params_from_url();</script>
+      </div>
+    <hr>
+    </div>
+  </div>
+  
+  <div class="row" style="margin-top: 15px;">
+    <div class="col">
+      
+      <div class="showtime_branch_box_card">
+        <div id="showtime_branch_box_card_html" style="width: 95%; margin: 0 auto;">
+          {% include 'showtime_branch_box_card.html' with showtime_datasets=paginator_showtime_datasets %}
+        </div>
+      </div>
+
+      {% for showtime_dataset in paginator_showtime_datasets %}
+      <div class="{{ showtime_dataset.branch_nickname }}_showtime_detail" style="display: none;">
+        <div style="display: inline-block; width: 100%;">
+          <h4 style="display: inline;"><b>{{ showtime_dataset.branch_fullname }}</b></h4>
+          <i class="fas fa-backspace cursor_hand fa-3x showtime_detail_back_to_branches" style="float:right; display: inline;" onclick="hide_element_by_class('{{ showtime_dataset.branch_nickname }}_showtime_detail'); show_element_by_class('showtime_branch_box_card'); show_element_by_class('pagination');"></i>
+        </div>
+        {% include 'showtime_branch_box_screen_details.html' with showtime_dataset=showtime_dataset %}
+      </div>
+      {% endfor %}
+      <!-- hidden field use for target screen_number that source for copy -->
+      <input type="text" id="temp_id_of_screen_table_to_copy" value="" hidden>
+
+      {% if paginator_showtime_datasets.has_other_pages %}
+      <div class="container" style="margin-top: 1em;">
+        <div class="row">
+          <div class="col">
+            <div class="pagination" style="width: fit-content; margin: 0 auto;">
+              {% if paginator_showtime_datasets.has_previous %}
+              <a href="?{% update_url_params page=1 %}">&laquo;</a>
+              {% endif %}
+              {% for i in paginator_showtime_datasets.paginator.page_range %}
+              {% if i >= paginator_showtime_datasets.number|add:'-5' and i <= paginator_showtime_datasets.number|add:'5' %}
+              {% if paginator_showtime_datasets.number == i %}
+              <a class="active" href="?{% update_url_params page=i %}">{{ i }}</a>
+              {% else %}
+              <a href="?{% update_url_params page=i %}">{{ i }}</a>
+              {% endif %}
+              {% endif %}
+              {% endfor %}
+              {% if paginator_showtime_datasets.has_next %}
+              <a href="?{% update_url_params page=paginator_showtime_datasets.paginator.num_pages %}">&raquo;</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+  
+</div>
+
+<script>
+  
+  function submit_showtime_details_form(form_class){
+    loading_screen(true);
+    let ip_form_class = "." + form_class;
+
+    // use for remove showtime_detail_row_to_table that not complete
+    $('[name="showtime"]').each(function(){
+      if($(this).val() == ''){
+        remove_element($(this).parent().parent().parent());
+      }
+    });
+    $('#showtime_branch_selection').modal('hide');
+
+    let showtimes = $(ip_form_class).find('[name="showtime"]').map(function(){return $(this).val();}).get();
+    let mv_ids = $(ip_form_class).find('[name="mv_id"]').map(function(){return $(this).val();}).get();
+    let mv_formats = $(ip_form_class).find('[name="mv_format"]').map(function(){return $(this).val();}).get();
+    let langs = $(ip_form_class).find('[name="lang"]').map(function(){return $(this).val();}).get();
+    let screens = $(ip_form_class).find('[name="screen"]').map(function(){return $(this).val();}).get();
+
+    let choose_status_branch_code_details = $('#showtime_branch_selection_details').find('[name="choose_status_branch_code_detail"]').map(function(){return $(this).val();}).get();
+    let choose_status = $('#showtime_branch_selection_details').find('[name="choose_status"]').map(function(){return $(this).val();}).get();
+
+    let select_region = $('#select_region').val();
+    let select_n_screen = $('#select_n_screen').val();
+    let showtime_date = $('#showtime_date').val();
+    let search_showtime = $('#search_showtime').val();
+
+    $.ajax({
+      url: '{% url "update_showtimes" %}',
+      type: 'POST',
+      dataType: 'json',
+      data: {
+        'csrfmiddlewaretoken'               : '{{ csrf_token }}',
+        'select_region'                     : select_region,
+        'select_n_screen'                   : select_n_screen,
+        'showtime_date'                     : showtime_date,
+        'search_showtime'                   : search_showtime,
+        'showtime[]'                        : showtimes,
+        'mv_id[]'                           : mv_ids,
+        'mv_format[]'                       : mv_formats,
+        'lang[]'                            : langs,
+        'screen[]'                          : screens,
+        'choose_status_branch_code_detail[]': choose_status_branch_code_details,
+        'choose_status[]'                   : choose_status
+      },
+      success: function(response){
+        let count_choose_status_1 = 0;
+        for(i in choose_status){
+          if(choose_status[i] == '1'){
+            count_choose_status_1 += 1;
+            if(count_choose_status_1 > 1){
+              break;
+            }
+          }
+        }
+        if(count_choose_status_1 == 1){
+          if(response.showtime_branch_selection_modal_html != ''){
+            $('#showtime_branch_selection_modal_html').html(response.showtime_branch_selection_modal_html);
+          }
+          if(response.showtime_branch_box_card_html != ''){
+            $('#showtime_branch_box_card_html').html(response.showtime_branch_box_card_html);
+          }
+          loading_screen(false);
+        }
+        else{
+          alert("Multiple clone success!");
+          location.reload();
+        }
+      },
+      error: function(){
+        alert('Oops! something went wrong, Please try again later.');
+        location.reload();
+      }
+    });
+  }
+
+
+  function submit_from_showtime_branch_selection_form(showtime_details_form_class){
+    let function_to_use = "submit_showtime_details_form('" + showtime_details_form_class + "');";
+
+    $('#submit_from_showtime_branch_selection_form').removeAttr('onClick');
+    $('#submit_from_showtime_branch_selection_form').attr('onClick', function_to_use);
+  }
+
+
+  $('#temp_id_of_screen_table_to_copy').on('change', function(){
+    if($(this).val() == ''){
+      $('.btn_paste').attr('hidden', true);
+    }
+    else{
+      $('.btn_paste').attr('hidden', false);
+    }
+  });
+</script>
+{% endblock content %}

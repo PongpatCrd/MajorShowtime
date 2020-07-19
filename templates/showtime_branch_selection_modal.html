@@ -1,0 +1,80 @@
+{% block content %}
+<!-- Modal -->
+<div class="modal fade" id="showtime_branch_selection" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><b>Save and cone to</b></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-inline" style="float: right;">
+          <span><small>Search: </small><input id="filter_search" type="text" class="form-control form-control-sm filter"/></span>
+        </div>
+        <br><br>
+
+        <div class="table-responsive">
+          <table id="showtime_branch_selection_table" class="table table-hover table-sm">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col"><small>#</small></th>
+                <th scope="col"><small>Branch code</small></th>
+                <th scope="col"><small>Branch name</small></th>
+                <th scope="col"><small>Region</small></th>
+                <th scope="col"><small>Screen in use</small></th>
+                <th scope="col">
+                  <i id="check_all_choose_status_icon" class="fas fa-check-double cursor_hand"> <small>Check all</small></i>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="showtime_branch_selection_details">
+              {% for detail in all_showtime_datasets %}
+              <tr class="showtime_branch_selection_row">
+                <td style="text-align: center;">{{ forloop.counter }}</td>
+                <td style="text-align: center;">{{ detail.branch_nickname }}</td>
+                <td>{{ detail.branch_fullname }}</td>
+                <td style="text-align: center;">{{ detail.branch_region }}</td>
+                {% if detail.n_theatre_use == detail.branch_notheatre %}
+                <td style="text-align: center; color: greenyellow;">{{ detail.n_theatre_use }}/{{ detail.branch_notheatre }}</td>
+                {% else %}
+                <td style="text-align: center; color: red;">{{ detail.n_theatre_use }}/{{ detail.branch_notheatre }}</td>
+                {% endif %}
+                <td style="text-align: center;">
+                  <input type="text" name="choose_status_branch_code_detail" value="{{ detail.branch_nickname }}" hidden/>
+                  <input type="text" id="choose_status_{{ detail.branch_nickname }}" name="choose_status" class="choose_status" value="0" hidden/>
+                  <i id="icon_checkbox_branch_choose_status_{{ detail.branch_nickname }}" class="fas fa-square choose_status_icon" onclick="change_checkbox_icon_and_input_value('choose_status_{{ detail.branch_nickname }}', 'icon_checkbox_branch_choose_status_{{ detail.branch_nickname }}');" style="cursor: pointer;"></i>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <script>
+          $('.filter').on('input', function(){
+            let filter_search = $('#filter_search').val().toLowerCase();
+            $('.showtime_branch_selection_row').filter(function(){
+              $(this).toggle($(this).text().toLocaleLowerCase().indexOf(filter_search) > -1);
+            });
+          });
+
+          $('#check_all_choose_status_icon').on('click', function(){
+            let filter_search = $('#filter_search').val().toLowerCase();
+            $('.showtime_branch_selection_row').filter(function(){
+              if($(this).text().toLocaleLowerCase().indexOf(filter_search) > -1){
+                $(this).find('[name="choose_status"]').val(1);
+                $(this).find('.choose_status_icon').removeClass('fas fa-check-square fas fa-square').addClass('fas fa-check-square');
+              }
+            });
+          });
+        </script>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button id="submit_from_showtime_branch_selection_form" type="button" class="btn btn-primary" onclick="">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

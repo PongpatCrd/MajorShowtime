@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% load static %}
+    <!-- jquery -->
+    <script src="{% static 'jquery-3.4.1/js/jquery-3.4.1.js' %}"></script>
+    <!-- jquery -->
+
+    <!-- bootstrap -->
+    <link href="{% static 'bootstrap-4.4.1-dist/css/bootstrap.css' %}" rel="stylesheet"/>
+    <script src="{% static 'bootstrap-4.4.1-dist/js/bootstrap.min.js' %}"></script>
+    <!-- bootstrap -->
+
+    <!-- fontawsome -->
+    <link href="{% static 'fontawesome-free-5.12.0-web/css/all.css' %}" rel="stylesheet"/>
+    <!-- fontawsome -->
+
+    <!-- moment -->
+    <script src="{% static 'moment/js/moment.js' %}"></script>
+    <!-- moment -->
+
+    <!-- chart.js -->
+    <script src="{% static 'Chart.js-2.9.3/js/Chart.min.js' %}"></script>
+    <link href="{% static 'Chart.js-2.9.3/css/Chart.min.css' %}" rel="stylesheet"/>
+    <!-- chart.js -->
+
+    <!-- select2 -->
+    <script src="{% static 'select2-4.0.13/js/select2.min.js' %}"></script>
+    <link href="{% static 'select2-4.0.13/css/select2.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'select2-bootstrap4-theme/dist/select2-bootstrap4.css' %}" rel="stylesheet"/>
+    <!-- select2 -->
+
+    <!-- jquery-ui -->
+    <script src="{% static 'jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
+    <link href="{% static 'jquery-ui-1.12.1/jquery-ui.min.css' %}" rel="stylesheet">
+    <!-- jquery-ui -->
+
+    <!-- base -->
+    <script src="{% static 'major_showtime/js/base.js' %}"></script>
+    <link href="{% static 'major_showtime/css/base.css' %}" rel="stylesheet"/>
+    <!-- base -->
+
+    <!-- home -->
+    <script src="{% static 'major_showtime/js/home.js' %}"></script>
+    <!-- home -->
+
+    <!-- movies -->
+    <script src="{% static 'major_showtime/js/movies.js' %}"></script>
+    <link href="{% static 'major_showtime/css/movies.css' %}" rel="stylesheet"/>
+    <!-- movies -->
+
+    <!-- time setting -->
+    <script src="{% static 'major_showtime/js/time_setting.js' %}"></script>
+    <!-- time setting -->
+
+    <!-- showtimes -->
+    <script src="{% static 'major_showtime/js/showtimes.js' %}"></script>
+    <link href="{% static 'major_showtime/css/showtimes.css' %}" rel="stylesheet"/>
+    <!-- showtimes -->
+  </head>
+
+  <body>
+    {% include 'navbar.html' %}
+    <div id="loading_screen" class="loading_page">
+      <div class='body'>
+        <span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <div class='base'>
+          <span></span>
+          <div class='face'></div>
+        </div>
+      </div>
+      <div class='longfazers'>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <p class="body" style="padding-top: 25px; padding-left: 35px; color: white;"><small><i>L o a d i n g . . .</i></small></p>
+    </div>
+
+    <script>
+      $(document).ready(function(){
+        loading_screen(false);
+      });
+    </script>
+
+    <div id="main">
+      {% include 'error_alert.html' %}
+      <i id="navbar_button" class="fas fa-chevron-circle-right" onclick="open_sidebar()" style="font-size:40px;cursor:pointer"></i>
+      <div class="continer" style="margin: 10px 40px 10px 40px;">     
+        <div class="row">
+          <div class="col">
+            {% block content %}
+            {% endblock content %}
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </body>
+</html>

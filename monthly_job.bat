@@ -1,0 +1,1 @@
+"C:\Users\nipit.pat\AppData\Local\Programs\Python\Python37\python.exe" "D:\MajorShowtime\MajorShowtime\pull_data_main.py"

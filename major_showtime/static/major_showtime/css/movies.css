@@ -1,0 +1,18 @@
+.div_table_form {
+  display: table;
+  border-collapse: separate;
+  border-spacing: 10px;
+  width: 100%;
+}
+
+.div_row_form { 
+  display:table-row; 
+}
+
+.div_cell_form {
+  display:table-cell;
+}
+
+.div_cell_form > input {
+  width: 70%;
+}
